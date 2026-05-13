@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import logo from "../../assets/logo.png";
 
 const Navbar = () => {
   return (
@@ -17,18 +18,16 @@ const Navbar = () => {
     >
       {/* LOGO */}
       <div className="flex items-center gap-3">
-        <div
+        <img
+          src={logo}
+          alt="CryptoPortal"
           className="
             h-10 w-10
             rounded-xl
-            bg-[#6366F1]
             shadow-lg shadow-indigo-500/30
-            flex items-center justify-center
-            text-white font-black
+            object-cover
           "
-        >
-          ₿
-        </div>
+        />
 
         <h1 className="text-lg font-black tracking-tight text-white">
           CryptoPortal

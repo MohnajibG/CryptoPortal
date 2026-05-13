@@ -1,166 +1,227 @@
-import React from "react";
+import { motion } from "framer-motion";
 
-type Resource = {
+type Lesson = {
   id: string;
   title: string;
-  description?: string;
-  link?: string;
-  tag?: string;
+  description: string;
+  tag: string;
+  level: string;
 };
 
-const sampleCourses: Resource[] = [
+type Track = {
+  title: string;
+  description: string;
+  steps: string[];
+};
+
+const lessons: Lesson[] = [
   {
-    id: "c1",
-    title: "Intro to Cryptography",
+    id: "crypto-basics",
+    title: "Crypto fundamentals",
     description:
-      "Foundations of modern cryptography: hashes, symmetric/asymmetric crypto.",
-    link: "#",
-    tag: "Course",
+      "Understand wallets, private keys, seed phrases, transactions, gas fees, and why self-custody matters.",
+    tag: "Starter",
+    level: "Beginner",
   },
   {
-    id: "c2",
-    title: "Blockchain Basics",
+    id: "blockchain-basics",
+    title: "Blockchain basics",
     description:
-      "How blockchains work: consensus, mining, and smart contracts.",
-    link: "#",
-    tag: "Course",
+      "Learn how blocks, consensus, validators, miners, and finality work behind the scenes.",
+    tag: "Core",
+    level: "Beginner",
   },
   {
-    id: "r1",
-    title: "Ethereum Dev Tutorial",
-    description: "Hands-on guide for writing smart contracts and dApps.",
-    link: "#",
-    tag: "Tutorial",
+    id: "ethereum-dev",
+    title: "Ethereum & smart contracts",
+    description:
+      "Move from account-based networks to Solidity, contract deployment, and dApp interactions.",
+    tag: "Build",
+    level: "Intermediate",
+  },
+  {
+    id: "defi-security",
+    title: "DeFi risk & security",
+    description:
+      "Read approvals, spot phishing patterns, review contract risk, and protect funds before signing.",
+    tag: "Security",
+    level: "Practical",
   },
 ];
 
-const cardStyle: React.CSSProperties = {
-  border: "1px solid #e6e6e6",
-  borderRadius: 8,
-  padding: 16,
-  background: "#fff",
-  boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
-};
+const tracks: Track[] = [
+  {
+    title: "Start safely",
+    description: "The fastest path for a new user who wants to avoid costly mistakes.",
+    steps: ["Create a wallet", "Secure the seed phrase", "Send a small test transaction"],
+  },
+  {
+    title: "Understand markets",
+    description: "Build enough context to compare assets without guessing in the dark.",
+    steps: ["Read token supply", "Compare liquidity", "Track volatility"],
+  },
+  {
+    title: "Use dApps",
+    description: "Connect a wallet, inspect permissions, and interact with protocols carefully.",
+    steps: ["Connect wallet", "Check network", "Review approvals"],
+  },
+];
 
-const Education: React.FC = () => {
+const stats = [
+  { label: "Learning paths", value: "3" },
+  { label: "Core modules", value: "12" },
+  { label: "Security checks", value: "8" },
+];
+
+export default function Education() {
   return (
-    <main
-      style={{
-        padding: "32px",
-        fontFamily: "Inter, system-ui, sans-serif",
-        color: "#0f172a",
-      }}
-    >
-      <header style={{ marginBottom: 24 }}>
-        <h1 style={{ margin: 0, fontSize: 28 }}>Education</h1>
-        <p style={{ margin: "8px 0 0", color: "#475569" }}>
-          Learn the fundamentals of crypto, blockchain, and smart contract
-          development.
-        </p>
-      </header>
+    <main className="relative min-h-screen overflow-hidden bg-[#070A12] text-white">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#6366F1_0%,transparent_40%)] opacity-20" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,#22D3EE_0%,transparent_45%)] opacity-10" />
 
-      <section style={{ marginBottom: 32 }}>
-        <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-          <div style={{ flex: "1 1 320px", ...cardStyle }}>
-            <h2 style={{ marginTop: 0, fontSize: 18 }}>Getting started</h2>
-            <p style={{ margin: "8px 0", color: "#475569" }}>
-              If you're new, start with the basics: cryptography primitives,
-              blockchain concepts, then move to smart contracts and dApp
-              development.
-            </p>
-            <a href="#" style={{ color: "#0ea5a4", textDecoration: "none" }}>
-              Starter guide →
-            </a>
-          </div>
-
-          <div style={{ flex: "1 1 320px", ...cardStyle }}>
-            <h2 style={{ marginTop: 0, fontSize: 18 }}>Recommended tools</h2>
-            <ul
-              style={{ margin: "8px 0 0", paddingLeft: 20, color: "#475569" }}
-            >
-              <li>VS Code + Solidity extensions</li>
-              <li>Hardhat / Truffle</li>
-              <li>Metamask</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <section style={{ marginBottom: 32 }}>
-        <h3 style={{ margin: "0 0 12px 0" }}>Courses & Tutorials</h3>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-            gap: 12,
-          }}
+      <div className="relative mx-auto max-w-7xl px-6 py-10">
+        <motion.header
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between"
         >
-          {sampleCourses.map((r) => (
-            <article key={r.id} style={cardStyle}>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "start",
-                  gap: 8,
-                }}
-              >
-                <h4 style={{ margin: 0, fontSize: 16 }}>{r.title}</h4>
-                {r.tag && (
-                  <span
-                    style={{
-                      background: "#eef2ff",
-                      color: "#4f46e5",
-                      borderRadius: 6,
-                      padding: "2px 8px",
-                      fontSize: 12,
-                    }}
-                  >
-                    {r.tag}
-                  </span>
-                )}
-              </div>
-              {r.description && (
-                <p style={{ margin: "8px 0 12px", color: "#475569" }}>
-                  {r.description}
-                </p>
-              )}
-              {r.link && (
-                <a
-                  href={r.link}
-                  style={{
-                    color: "#0ea5a4",
-                    textDecoration: "none",
-                    fontSize: 14,
-                  }}
-                >
-                  Open →
-                </a>
-              )}
-            </article>
-          ))}
-        </div>
-      </section>
+          <div className="max-w-3xl">
+            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-indigo-300">
+              Education hub
+            </p>
+            <h1 className="text-4xl font-black tracking-tight md:text-5xl">
+              Learn crypto without flying blind
+            </h1>
+            <p className="mt-4 max-w-2xl text-white/50">
+              Build a clean mental model of wallets, blockchains, DeFi, and
+              security before connecting funds to protocols.
+            </p>
+          </div>
 
-      <section>
-        <h3 style={{ margin: "0 0 12px 0" }}>Resources</h3>
-        <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-          <div style={{ ...cardStyle, flex: "1 1 240px" }}>
-            <strong>Glossary</strong>
-            <p style={{ margin: "8px 0 0", color: "#475569" }}>
-              Quick definitions of common crypto terms.
-            </p>
+          <div className="grid grid-cols-3 gap-3 rounded-2xl border border-white/10 bg-white/5 p-3 backdrop-blur-xl">
+            {stats.map((stat) => (
+              <div key={stat.label} className="min-w-24 rounded-xl bg-white/5 px-4 py-3">
+                <p className="text-2xl font-black">{stat.value}</p>
+                <p className="mt-1 text-xs text-white/45">{stat.label}</p>
+              </div>
+            ))}
           </div>
-          <div style={{ ...cardStyle, flex: "1 1 240px" }}>
-            <strong>Security best practices</strong>
-            <p style={{ margin: "8px 0 0", color: "#475569" }}>
-              How to avoid common smart contract vulnerabilities.
+        </motion.header>
+
+        <section className="mt-10 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+          <motion.article
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.05 }}
+            className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl"
+          >
+            <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+              <div>
+                <h2 className="text-2xl font-black">Getting started</h2>
+                <p className="mt-2 max-w-xl text-sm text-white/50">
+                  Follow the path in order if you are new. It keeps the risky
+                  concepts separated from the practical wallet actions.
+                </p>
+              </div>
+              <button className="w-full rounded-xl bg-[#6366F1] px-5 py-3 text-sm font-bold shadow-lg shadow-indigo-500/30 transition hover:bg-indigo-500 md:w-auto">
+                Start learning
+              </button>
+            </div>
+
+            <div className="mt-8 grid gap-4 md:grid-cols-3">
+              {tracks.map((track, index) => (
+                <div
+                  key={track.title}
+                  className="rounded-2xl border border-white/10 bg-black/20 p-5"
+                >
+                  <div className="mb-4 flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-500/15 text-sm font-black text-indigo-200">
+                    {index + 1}
+                  </div>
+                  <h3 className="font-bold">{track.title}</h3>
+                  <p className="mt-2 text-sm text-white/45">{track.description}</p>
+                  <ul className="mt-4 space-y-2 text-sm text-white/60">
+                    {track.steps.map((step) => (
+                      <li key={step} className="flex items-center gap-2">
+                        <span className="h-1.5 w-1.5 rounded-full bg-cyan-300" />
+                        {step}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </motion.article>
+
+          <motion.aside
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl"
+          >
+            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-cyan-200">
+              Wallet checklist
             </p>
+            <h2 className="mt-3 text-2xl font-black">Before you connect</h2>
+            <div className="mt-6 space-y-3">
+              {[
+                "Confirm the URL before signing.",
+                "Never type your seed phrase into a website.",
+                "Review token approvals after DeFi actions.",
+                "Send a small test transaction first.",
+              ].map((item) => (
+                <div
+                  key={item}
+                  className="rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white/70"
+                >
+                  {item}
+                </div>
+              ))}
+            </div>
+          </motion.aside>
+        </section>
+
+        <motion.section
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.15 }}
+          className="mt-10"
+        >
+          <div className="mb-5 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+            <div>
+              <h2 className="text-2xl font-black">Courses & tutorials</h2>
+              <p className="mt-1 text-sm text-white/45">
+                Short modules designed for scanning, practice, and safer decisions.
+              </p>
+            </div>
           </div>
-        </div>
-      </section>
+
+          <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+            {lessons.map((lesson) => (
+              <article
+                key={lesson.id}
+                className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl transition hover:border-indigo-400/60 hover:bg-white/10"
+              >
+                <div className="mb-5 flex items-center justify-between gap-3">
+                  <span className="rounded-full bg-indigo-500/15 px-3 py-1 text-xs font-bold text-indigo-200">
+                    {lesson.tag}
+                  </span>
+                  <span className="text-xs text-white/40">{lesson.level}</span>
+                </div>
+                <h3 className="text-lg font-black">{lesson.title}</h3>
+                <p className="mt-3 text-sm leading-6 text-white/50">
+                  {lesson.description}
+                </p>
+                <a
+                  href="#"
+                  className="mt-5 inline-block text-sm font-semibold text-indigo-300 transition hover:text-indigo-200"
+                >
+                  Open module →
+                </a>
+              </article>
+            ))}
+          </div>
+        </motion.section>
+      </div>
     </main>
   );
-};
-
-export default Education;
+}
