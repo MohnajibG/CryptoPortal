@@ -8,7 +8,7 @@ import News from "./pages/News";
 import Security from "./pages/Security";
 import Guides from "./pages/Guides";
 import Comparisons from "./pages/Comparisons";
-import BlockchainApps from "./pages/BlockchainApps";
+import DApp from "./pages/DApp";
 import Community from "./pages/Community";
 
 const App = () => {
@@ -23,7 +23,7 @@ const App = () => {
         <Route path="/security" element={<Security />} />
         <Route path="/guides" element={<Guides />} />
         <Route path="/comparisons" element={<Comparisons />} />
-        <Route path="/apps" element={<BlockchainApps />} />
+        <Route path="/dapp" element={<DApp />} />
         <Route path="/community" element={<Community />} />
       </Routes>
     </div>
