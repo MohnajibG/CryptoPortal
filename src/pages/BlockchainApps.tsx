@@ -50,7 +50,7 @@ export default function BlockchainApps() {
   return (
     <main className="min-h-screen bg-linear-to-b from-black via-gray-950 to-black text-white px-6 py-10">
       {/* HEADER */}
-      <header className="flex items-center justify-between mb-10">
+      <header className="mb-10 flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-3xl font-bold">Blockchain Apps</h1>
           <p className="text-gray-400 text-sm">

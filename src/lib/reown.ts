@@ -12,9 +12,11 @@ createAppKit({
     name: "CryptoPortal",
     description: "Crypto dashboard",
     url: "http://localhost:5173",
-    icons: [],
+    icons: ["/favicon.svg"],
   },
   features: {
-    analytics: true,
+    analytics: false,
+    email: false,
+    socials: false,
   },
 });
