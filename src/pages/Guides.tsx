@@ -1,331 +1,289 @@
-import React, { useMemo, useState, type JSX } from "react";
+import { useMemo, useState, type JSX } from "react";
+import { motion } from "framer-motion";
 
-type Difficulty = "Débutant" | "Intermédiaire" | "Avancé";
+type Difficulty = "Debutant" | "Intermediaire" | "Avance";
 
 type Guide = {
   id: string;
   title: string;
   description: string;
-  content?: string;
+  content: string;
   tags: string[];
   difficulty: Difficulty;
-  updatedAt: string; // ISO date
+  updatedAt: string;
 };
 
-const SAMPLE_GUIDES: Guide[] = [
+const sampleGuides: Guide[] = [
   {
     id: "intro",
-    title: "Introduction à la crypto",
+    title: "Introduction a la crypto",
     description:
-      "Comprendre les fondamentaux : blockchain, clés publiques/privées, comment débuter en toute sécurité.",
+      "Comprendre les fondamentaux : blockchain, cles publiques/privees, et premiers reflexes.",
     content:
-      "Ce guide couvre les notions de base : qu'est-ce qu'une blockchain, comment fonctionnent les transactions, comment choisir un portefeuille (custodial vs non-custodial) et les premières bonnes pratiques pour acheter et conserver des actifs numériques.",
+      "Ce guide couvre les bases : fonctionnement d'une blockchain, transactions, choix d'un portefeuille custodial ou non-custodial, et bonnes pratiques pour acheter et conserver des actifs numeriques.",
     tags: ["basics"],
-    difficulty: "Débutant",
+    difficulty: "Debutant",
     updatedAt: "2025-01-10",
   },
   {
     id: "wallet-security",
-    title: "Sécurité des portefeuilles",
+    title: "Securite des portefeuilles",
     description:
-      "Meilleures pratiques pour sécuriser vos fonds : hardware wallets, seed phrases, phishing, et gestion des sauvegardes.",
+      "Hardware wallets, seed phrases, phishing, sauvegardes et hygiene de signature.",
     content:
-      "Détaillé : configuration d'un hardware wallet, sauvegarde sécurisée de la seed phrase, détection des scams et conseils pour réduire les risques de perte.",
-    tags: ["sécurité"],
-    difficulty: "Intermédiaire",
+      "Configuration d'un hardware wallet, sauvegarde securisee de la seed phrase, detection des scams et reduction des risques de perte.",
+    tags: ["securite"],
+    difficulty: "Intermediaire",
     updatedAt: "2025-02-02",
   },
   {
     id: "fundamental-analysis",
     title: "Analyse fondamentale des tokens",
     description:
-      "Comment évaluer un projet crypto : tokenomics, équipe, roadmap, adoption et risques réglementaires.",
+      "Evaluer un projet crypto avec tokenomics, equipe, roadmap, adoption et risques.",
     content:
-      "Méthodologie d'analyse : lire les whitepapers, vérifier l'activité GitHub, analyser la distribution des tokens et comprendre les mécanismes d'incitation.",
+      "Methodologie d'analyse : lire les whitepapers, verifier l'activite du projet, analyser la distribution des tokens et comprendre les mecanismes d'incitation.",
     tags: ["analyse"],
-    difficulty: "Intermédiaire",
+    difficulty: "Intermediaire",
     updatedAt: "2024-12-01",
   },
   {
     id: "trading-basics",
     title: "Trading : spot vs margin",
     description:
-      "Comprendre les différences entre trading spot, margin et produits dérivés, et les risques associés.",
+      "Comprendre les differences entre spot, margin, produits derives et liquidation.",
     content:
-      "Explication des leviers, liquidation, gestion du risque et règles de base pour construire une stratégie simple.",
+      "Explication du levier, de la liquidation, de la gestion du risque et des regles de base pour construire une strategie simple.",
     tags: ["trading"],
-    difficulty: "Avancé",
+    difficulty: "Avance",
     updatedAt: "2024-11-20",
   },
   {
     id: "staking-defi",
     title: "Staking et DeFi",
     description:
-      "Principes du staking, yield farming, les risques des pools de liquidité et comment interpréter les APY.",
+      "Principes du staking, yield farming, pools de liquidite et lecture des APY.",
     content:
-      "Comparaison du staking en protocole vs via un exchange, risques de smart contract, slashing, et bonnes pratiques pour diversifier.",
+      "Comparaison du staking en protocole et via exchange, risques de smart contract, slashing et bonnes pratiques pour diversifier.",
     tags: ["defi", "staking"],
-    difficulty: "Intermédiaire",
+    difficulty: "Intermediaire",
     updatedAt: "2025-03-15",
   },
   {
     id: "taxes",
-    title: "Fiscalité et conformité",
+    title: "Fiscalite et conformite",
     description:
-      "Panorama des obligations fiscales courantes pour les investisseurs crypto et conseils pour la tenue de registre.",
+      "Panorama des obligations fiscales courantes et tenue de registre crypto.",
     content:
-      "Consignes générales : conserver l'historique des transactions, connaître les règles locales et consulter un conseiller fiscal pour cas complexes.",
-    tags: ["fiscalité"],
-    difficulty: "Débutant",
+      "Conservez l'historique des transactions, connaissez les regles locales et consultez un conseiller fiscal pour les cas complexes.",
+    tags: ["fiscalite"],
+    difficulty: "Debutant",
     updatedAt: "2024-09-30",
   },
 ];
 
-const containerStyle: React.CSSProperties = {
-  maxWidth: 960,
-  margin: "24px auto",
-  padding: 20,
-  fontFamily: "Inter, Roboto, system-ui, sans-serif",
-  color: "#0f172a",
-};
-
-const headerStyle: React.CSSProperties = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "flex-end",
-  gap: 12,
-  flexWrap: "wrap",
-};
-
-const controlsStyle: React.CSSProperties = {
-  display: "flex",
-  gap: 8,
-  alignItems: "center",
-  marginTop: 12,
-  flexWrap: "wrap",
-};
-
-const inputStyle: React.CSSProperties = {
-  padding: "8px 12px",
-  borderRadius: 8,
-  border: "1px solid #e6e9ef",
-  minWidth: 220,
-};
-
-const selectStyle: React.CSSProperties = { ...inputStyle, minWidth: 160 };
-
-const listStyle: React.CSSProperties = {
-  marginTop: 20,
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-  gap: 12,
-};
-
-const cardStyle: React.CSSProperties = {
-  border: "1px solid #e6e9ef",
-  borderRadius: 12,
-  padding: 14,
-  background: "#ffffff",
-  boxShadow: "0 2px 8px rgba(15,23,42,0.04)",
-};
-
-const tagStyle: React.CSSProperties = {
-  display: "inline-block",
-  background: "#eef2ff",
-  color: "#3730a3",
-  padding: "2px 8px",
-  borderRadius: 999,
-  fontSize: 12,
-  marginRight: 6,
-};
+const difficultyLabels: Difficulty[] = ["Debutant", "Intermediaire", "Avance"];
 
 export default function Guides(): JSX.Element {
   const [query, setQuery] = useState("");
-  const [tagFilter, setTagFilter] = useState<string>("all");
+  const [tagFilter, setTagFilter] = useState("all");
   const [difficultyFilter, setDifficultyFilter] = useState<string>("all");
   const [sortBy, setSortBy] = useState<"relevant" | "updated">("relevant");
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
   const allTags = useMemo(() => {
-    const s = new Set<string>();
-    SAMPLE_GUIDES.forEach((g) => g.tags.forEach((t) => s.add(t)));
-    return Array.from(s).sort();
+    const tags = new Set<string>();
+    sampleGuides.forEach((guide) => guide.tags.forEach((tag) => tags.add(tag)));
+    return Array.from(tags).sort();
   }, []);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    let arr = SAMPLE_GUIDES.filter((g) => {
-      if (tagFilter !== "all" && !g.tags.includes(tagFilter)) return false;
-      if (difficultyFilter !== "all" && g.difficulty !== difficultyFilter)
+
+    let guides = sampleGuides.filter((guide) => {
+      if (tagFilter !== "all" && !guide.tags.includes(tagFilter)) return false;
+      if (difficultyFilter !== "all" && guide.difficulty !== difficultyFilter) {
         return false;
+      }
       if (!q) return true;
+
       return (
-        g.title.toLowerCase().includes(q) ||
-        g.description.toLowerCase().includes(q) ||
-        (g.content && g.content.toLowerCase().includes(q))
+        guide.title.toLowerCase().includes(q) ||
+        guide.description.toLowerCase().includes(q) ||
+        guide.content.toLowerCase().includes(q)
       );
     });
 
-    if (sortBy === "updated") {
-      arr = arr.slice().sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : -1));
-    } else {
-      // "relevant" : simple heuristic -> title matches first, then description
-      arr = arr.slice().sort((a, b) => {
-        const aScore =
-          (a.title.toLowerCase().includes(q) ? 3 : 0) +
-          (a.description.toLowerCase().includes(q) ? 1 : 0);
-        const bScore =
-          (b.title.toLowerCase().includes(q) ? 3 : 0) +
-          (b.description.toLowerCase().includes(q) ? 1 : 0);
-        return bScore - aScore || (a.updatedAt < b.updatedAt ? 1 : -1);
-      });
-    }
+    guides = guides.slice().sort((a, b) => {
+      if (sortBy === "updated") {
+        return a.updatedAt < b.updatedAt ? 1 : -1;
+      }
 
-    return arr;
-  }, [query, tagFilter, difficultyFilter, sortBy]);
+      const aScore =
+        (a.title.toLowerCase().includes(q) ? 3 : 0) +
+        (a.description.toLowerCase().includes(q) ? 1 : 0);
+      const bScore =
+        (b.title.toLowerCase().includes(q) ? 3 : 0) +
+        (b.description.toLowerCase().includes(q) ? 1 : 0);
+
+      return bScore - aScore || (a.updatedAt < b.updatedAt ? 1 : -1);
+    });
+
+    return guides;
+  }, [difficultyFilter, query, sortBy, tagFilter]);
 
   return (
-    <div style={containerStyle}>
-      <div style={headerStyle}>
-        <div>
-          <h1 style={{ margin: 0, fontSize: 28 }}>Guides</h1>
-          <p style={{ margin: "6px 0 0 0", color: "#475569" }}>
-            Des tutoriels clairs et pratiques pour mieux comprendre l'univers
-            crypto.
-          </p>
-        </div>
+    <main className="relative min-h-screen overflow-hidden bg-[#070A12] text-white">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#6366F1_0%,transparent_40%)] opacity-20" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,#22D3EE_0%,transparent_45%)] opacity-10" />
 
-        <div style={{ textAlign: "right", color: "#64748b", fontSize: 13 }}>
-          {SAMPLE_GUIDES.length} guides disponibles
-        </div>
-      </div>
-
-      <div style={controlsStyle}>
-        <input
-          aria-label="Recherche"
-          placeholder="Rechercher un guide, ex: sécurité, staking..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          style={inputStyle}
-        />
-
-        <select
-          aria-label="Filtrer par tag"
-          value={tagFilter}
-          onChange={(e) => setTagFilter(e.target.value)}
-          style={selectStyle}
+      <div className="relative mx-auto max-w-7xl px-6 py-10">
+        <motion.header
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between"
         >
-          <option value="all">Tous les tags</option>
-          {allTags.map((t) => (
-            <option key={t} value={t}>
-              {t}
-            </option>
-          ))}
-        </select>
+          <div className="max-w-3xl">
+            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-indigo-300">
+              Practical guides
+            </p>
+            <h1 className="text-4xl font-black tracking-tight md:text-5xl">
+              Guides crypto
+            </h1>
+            <p className="mt-4 max-w-2xl text-white/50">
+              Des tutoriels courts et actionnables pour comprendre, comparer et
+              utiliser les outils crypto avec plus de confiance.
+            </p>
+          </div>
 
-        <select
-          aria-label="Filtrer par difficulté"
-          value={difficultyFilter}
-          onChange={(e) => setDifficultyFilter(e.target.value)}
-          style={selectStyle}
-        >
-          <option value="all">Toutes les difficultés</option>
-          <option value="Débutant">Débutant</option>
-          <option value="Intermédiaire">Intermédiaire</option>
-          <option value="Avancé">Avancé</option>
-        </select>
-
-        <select
-          aria-label="Trier"
-          value={sortBy}
-          onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-            setSortBy(e.target.value as "relevant" | "updated")
-          }
-          style={selectStyle}
-        >
-          <option value="relevant">Pertinence</option>
-          <option value="updated">Dernière mise à jour</option>
-        </select>
-      </div>
-
-      <div style={listStyle}>
-        {filtered.map((g) => (
-          <article key={g.id} style={cardStyle}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                gap: 8,
-              }}
-            >
-              <div>
-                <h2 style={{ margin: "0 0 6px 0", fontSize: 16 }}>{g.title}</h2>
-                <div style={{ color: "#64748b", fontSize: 13 }}>
-                  {g.description}
-                </div>
-              </div>
-
-              <div style={{ textAlign: "right", minWidth: 92 }}>
-                <div style={{ fontSize: 12, color: "#0f172a" }}>
-                  {g.difficulty}
-                </div>
-                <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 6 }}>
-                  Mis à jour {new Date(g.updatedAt).toLocaleDateString()}
-                </div>
-              </div>
+          <div className="grid grid-cols-2 gap-3 rounded-2xl border border-white/10 bg-white/5 p-3 backdrop-blur-xl">
+            <div className="rounded-xl bg-white/5 px-4 py-3">
+              <p className="text-2xl font-black">{sampleGuides.length}</p>
+              <p className="mt-1 text-xs text-white/45">Guides</p>
             </div>
+            <div className="rounded-xl bg-white/5 px-4 py-3">
+              <p className="text-2xl font-black">{allTags.length}</p>
+              <p className="mt-1 text-xs text-white/45">Categories</p>
+            </div>
+          </div>
+        </motion.header>
 
-            <div
-              style={{
-                marginTop: 10,
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-              }}
+        <section className="mt-10 grid gap-3 lg:grid-cols-[1fr_180px_210px_210px]">
+          <input
+            aria-label="Recherche"
+            placeholder="Rechercher securite, staking, analyse..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-white outline-none backdrop-blur-xl placeholder:text-white/30 focus:border-[#6366F1] focus:ring-2 focus:ring-[#6366F1]/30"
+          />
+
+          <select
+            aria-label="Filtrer par tag"
+            value={tagFilter}
+            onChange={(e) => setTagFilter(e.target.value)}
+            className="rounded-2xl border border-white/10 bg-gray-950/80 px-4 py-4 text-white outline-none"
+          >
+            <option value="all">Tous les tags</option>
+            {allTags.map((tag) => (
+              <option key={tag} value={tag}>
+                {tag}
+              </option>
+            ))}
+          </select>
+
+          <select
+            aria-label="Filtrer par difficulte"
+            value={difficultyFilter}
+            onChange={(e) => setDifficultyFilter(e.target.value)}
+            className="rounded-2xl border border-white/10 bg-gray-950/80 px-4 py-4 text-white outline-none"
+          >
+            <option value="all">Toutes difficultes</option>
+            {difficultyLabels.map((difficulty) => (
+              <option key={difficulty} value={difficulty}>
+                {difficulty}
+              </option>
+            ))}
+          </select>
+
+          <select
+            aria-label="Trier"
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as "relevant" | "updated")}
+            className="rounded-2xl border border-white/10 bg-gray-950/80 px-4 py-4 text-white outline-none"
+          >
+            <option value="relevant">Pertinence</option>
+            <option value="updated">Mise a jour</option>
+          </select>
+        </section>
+
+        <motion.section
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3"
+        >
+          {filtered.map((guide) => (
+            <article
+              key={guide.id}
+              className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl transition hover:border-indigo-400/60 hover:bg-white/10"
             >
-              {g.tags.map((t) => (
-                <span key={t} style={tagStyle}>
-                  {t}
+              <div className="mb-5 flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <h2 className="text-lg font-black">{guide.title}</h2>
+                  <p className="mt-2 text-sm leading-6 text-white/50">
+                    {guide.description}
+                  </p>
+                </div>
+                <span className="shrink-0 rounded-full bg-indigo-500/15 px-3 py-1 text-xs font-bold text-indigo-200">
+                  {guide.difficulty}
                 </span>
-              ))}
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                {guide.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-full border border-white/10 bg-black/20 px-3 py-1 text-xs text-white/55"
+                  >
+                    {tag}
+                  </span>
+                ))}
+                <span className="ml-auto text-xs text-white/35">
+                  {new Date(guide.updatedAt).toLocaleDateString()}
+                </span>
+              </div>
+
+              {expanded[guide.id] && (
+                <div className="mt-5 rounded-xl border border-white/10 bg-black/20 p-4">
+                  <p className="text-sm leading-6 text-white/55">{guide.content}</p>
+                  <ul className="mt-4 space-y-2 text-sm text-white/50">
+                    <li>Points cles expliques clairement</li>
+                    <li>Etapes pratiques et pieges a eviter</li>
+                    <li>Lectures recommandees pour aller plus loin</li>
+                  </ul>
+                </div>
+              )}
 
               <button
-                onClick={() => setExpanded((s) => ({ ...s, [g.id]: !s[g.id] }))}
-                style={{
-                  marginLeft: "auto",
-                  padding: "6px 10px",
-                  background: "transparent",
-                  border: "1px solid #e6e9ef",
-                  borderRadius: 8,
-                  cursor: "pointer",
-                }}
-                aria-expanded={!!expanded[g.id]}
+                onClick={() =>
+                  setExpanded((state) => ({
+                    ...state,
+                    [guide.id]: !state[guide.id],
+                  }))
+                }
+                className="mt-5 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-indigo-200 transition hover:bg-white/10"
               >
-                {expanded[g.id] ? "Réduire" : "Lire la suite"}
+                {expanded[guide.id] ? "Reduire" : "Lire la suite"}
               </button>
-            </div>
-
-            {expanded[g.id] && (
-              <div style={{ marginTop: 12, color: "#0f172a", lineHeight: 1.5 }}>
-                <p style={{ margin: "0 0 8px 0", color: "#334155" }}>
-                  {g.content}
-                </p>
-                <ul style={{ margin: "0 0 0 18px", color: "#475569" }}>
-                  <li>Points clés expliqués clairement</li>
-                  <li>Étapes pratiques et pièges à éviter</li>
-                  <li>Ressources et lectures recommandées</li>
-                </ul>
-              </div>
-            )}
-          </article>
-        ))}
+            </article>
+          ))}
+        </motion.section>
 
         {filtered.length === 0 && (
-          <div style={{ color: "#64748b", padding: 12 }}>
-            Aucun guide ne correspond à votre recherche.
-          </div>
+          <p className="mt-10 text-center text-white/40">
+            Aucun guide ne correspond a votre recherche.
+          </p>
         )}
       </div>
-    </div>
+    </main>
   );
 }
