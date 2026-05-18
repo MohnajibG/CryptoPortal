@@ -23,6 +23,7 @@ const App = () => {
         <Route path="/security" element={<Security />} />
         <Route path="/guides" element={<Guides />} />
         <Route path="/comparisons" element={<Comparisons />} />
+        <Route path="/apps" element={<DApp />} />
         <Route path="/dapp" element={<DApp />} />
         <Route path="/community" element={<Community />} />
       </Routes>
